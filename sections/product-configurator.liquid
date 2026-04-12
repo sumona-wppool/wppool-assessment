@@ -526,7 +526,7 @@ document.addEventListener('DOMContentLoaded', function() {
       .then(function(res) { return res.json(); })
       .then(function(data) {
         alert('Product added to cart!');
-        window.location.href = '/cart';
+        openCartDrawer();
       })
       .catch(function(err) {
         console.error('Error:', err);
