@@ -1,0 +1,105 @@
+{% if customer %}
+  {% assign is_wholesale = false %}
+  {% for tag in customer.tags %}
+    {% if tag == 'wholesale' %}
+      {% assign is_wholesale = true %}
+    {% endif %}
+  {% endfor %}
+
+  <div class="collection-wrapper">
+    {% for product in collection.products %}
+      {% assign is_wholesale_product = false %}
+      {% for tag in product.tags %}
+        {% if tag == 'wholesale-only' %}
+          {% assign is_wholesale_product = true %}
+        {% endif %}
+      {% endfor %}
+
+      {% if is_wholesale_product == true and is_wholesale == true %}
+        <div class="product-card">
+          <a href="{{ product.url }}">
+            {% if product.featured_image %}
+              <img src="{{ product.featured_image | img_url: '300x300' }}" alt="{{ product.title }}">
+            {% endif %}
+            <h3>{{ product.title }}</h3>
+            <p>{{ product.price | money }}</p>
+          </a>
+        </div>
+      {% elsif is_wholesale_product == false %}
+        <div class="product-card">
+          <a href="{{ product.url }}">
+            {% if product.featured_image %}
+              <img src="{{ product.featured_image | img_url: '300x300' }}" alt="{{ product.title }}">
+            {% endif %}
+            <h3>{{ product.title }}</h3>
+            <p>{{ product.price | money }}</p>
+          </a>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+{% else %}
+  <div class="collection-wrapper">
+    {% for product in collection.products %}
+      {% assign is_wholesale_product = false %}
+      {% for tag in product.tags %}
+        {% if tag == 'wholesale-only' %}
+          {% assign is_wholesale_product = true %}
+        {% endif %}
+      {% endfor %}
+
+      {% unless is_wholesale_product %}
+        <div class="product-card">
+          <a href="{{ product.url }}">
+            {% if product.featured_image %}
+              <img src="{{ product.featured_image | img_url: '300x300' }}" alt="{{ product.title }}">
+            {% endif %}
+            <h3>{{ product.title }}</h3>
+            <p>{{ product.price | money }}</p>
+          </a>
+        </div>
+      {% endunless %}
+    {% endfor %}
+  </div>
+{% endif %}
+
+<style>
+.collection-wrapper {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.product-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+.product-card img {
+  width: 100%;
+  border-radius: 4px;
+}
+.product-card h3 {
+  margin: 10px 0 5px;
+  font-size: 16px;
+}
+.product-card p {
+  color: #666;
+  font-size: 14px;
+}
+</style>
+
+{% schema %}
+{
+  "name": "Customer Collection",
+  "presets": [
+    {
+      "name": "Customer Collection"
+    }
+  ]
+}
+{% endschema %}
