@@ -1,0 +1,173 @@
+<div class="announcement-bar" id="announcement-bar">
+  <div class="announcement-slider" id="announcement-slider">
+    {% if section.settings.message_1 != blank %}
+    <div class="announcement-slide" data-index="0">
+      <span>{{ section.settings.message_1 }}</span>
+      <button class="dismiss-btn" data-index="0">✕</button>
+    </div>
+    {% endif %}
+    {% if section.settings.message_2 != blank %}
+    <div class="announcement-slide" data-index="1">
+      <span>{{ section.settings.message_2 }}</span>
+      <button class="dismiss-btn" data-index="1">✕</button>
+    </div>
+    {% endif %}
+    {% if section.settings.message_3 != blank %}
+    <div class="announcement-slide" data-index="2">
+      <span>{{ section.settings.message_3 }}</span>
+      <button class="dismiss-btn" data-index="2">✕</button>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+.announcement-bar {
+  background: {{ section.settings.bg_color }};
+  color: {{ section.settings.text_color }};
+  text-align: center;
+  padding: 10px 40px;
+  position: relative;
+  width: 100%;
+}
+.announcement-slide {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.announcement-slide.active {
+  display: flex;
+}
+.dismiss-btn {
+  background: none;
+  border: none;
+  color: {{ section.settings.text_color }};
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0 5px;
+}
+.dismiss-btn:hover { opacity: 0.7; }
+</style>
+
+<script>
+(function() {
+  var speed = {{ section.settings.rotation_speed | times: 1000 }};
+  var dismissed = JSON.parse(sessionStorage.getItem('dismissedMessages') || '[]');
+  var slides = document.querySelectorAll('.announcement-slide');
+  var bar = document.getElementById('announcement-bar');
+  var current = 0;
+  var visibleSlides = [];
+
+  // Hide dismissed slides
+  slides.forEach(function(slide) {
+    var idx = parseInt(slide.getAttribute('data-index'));
+    if (dismissed.indexOf(idx) !== -1) {
+      slide.style.display = 'none';
+    } else {
+      visibleSlides.push(slide);
+    }
+  });
+
+  // If all dismissed, hide bar
+  if (visibleSlides.length === 0) {
+    bar.style.display = 'none';
+    return;
+  }
+
+  // Show first visible slide
+  visibleSlides[0].classList.add('active');
+
+  // Auto rotate
+  var interval = setInterval(function() {
+    visibleSlides = Array.from(document.querySelectorAll('.announcement-slide')).filter(function(s) {
+      return s.style.display !== 'none';
+    });
+    if (visibleSlides.length === 0) {
+      bar.style.display = 'none';
+      clearInterval(interval);
+      return;
+    }
+    visibleSlides.forEach(function(s) { s.classList.remove('active'); });
+    current = (current + 1) % visibleSlides.length;
+    visibleSlides[current].classList.add('active');
+  }, speed);
+
+  // Dismiss buttons
+  document.querySelectorAll('.dismiss-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var idx = parseInt(this.getAttribute('data-index'));
+      dismissed.push(idx);
+      sessionStorage.setItem('dismissedMessages', JSON.stringify(dismissed));
+
+      var slide = this.parentElement;
+      slide.style.display = 'none';
+
+      visibleSlides = Array.from(document.querySelectorAll('.announcement-slide')).filter(function(s) {
+        return s.style.display !== 'none';
+      });
+
+      if (visibleSlides.length === 0) {
+        bar.style.display = 'none';
+        clearInterval(interval);
+      } else {
+        current = 0;
+        visibleSlides.forEach(function(s) { s.classList.remove('active'); });
+        visibleSlides[0].classList.add('active');
+      }
+    });
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Announcement Bar",
+  "settings": [
+    {
+      "type": "text",
+      "id": "message_1",
+      "label": "Message 1",
+      "default": "Free shipping on orders over $500!"
+    },
+    {
+      "type": "text",
+      "id": "message_2",
+      "label": "Message 2",
+      "default": "Custom range hoods handcrafted in the USA"
+    },
+    {
+      "type": "text",
+      "id": "message_3",
+      "label": "Message 3",
+      "default": "Call us: 1-800-RANGE-HOOD"
+    },
+    {
+      "type": "range",
+      "id": "rotation_speed",
+      "label": "Rotation Speed (seconds)",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement Bar"
+    }
+  ]
+}
+{% endschema %}
