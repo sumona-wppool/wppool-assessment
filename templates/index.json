@@ -9,12 +9,44 @@
  */
 {
   "sections": {
-    "main": {
-      "type": "hello-world",
+    "product_configurator_ErnjFe": {
+      "type": "product-configurator",
+      "name": "Product Configurator",
+      "settings": {
+        "quick_ship": false,
+        "quick_ship_days": 10,
+        "standard_lead_time": "4-6"
+      }
+    },
+    "analytics_pixels_fGyz6y": {
+      "type": "analytics-pixels",
+      "name": "Analytics Pixels",
+      "settings": {
+        "enable_analytics": true,
+        "ga4_id": "",
+        "fb_pixel_id": "",
+        "tiktok_pixel_id": "",
+        "pinterest_tag_id": "",
+        "google_ads_id": ""
+      }
+    },
+    "expivi_3d_viewer_gJpDWb": {
+      "type": "expivi-3d-viewer",
+      "name": "Expivi 3D Viewer",
+      "settings": {
+        "show_placeholder": true
+      }
+    },
+    "save_cart_t8UhLP": {
+      "type": "save-cart",
+      "name": "Save Cart",
       "settings": {}
     }
   },
   "order": [
-    "main"
+    "product_configurator_ErnjFe",
+    "analytics_pixels_fGyz6y",
+    "expivi_3d_viewer_gJpDWb",
+    "save_cart_t8UhLP"
   ]
 }
