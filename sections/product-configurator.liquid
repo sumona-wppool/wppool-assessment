@@ -1,8 +1,4 @@
-{% comment %} Product Configurator Section {% endcomment %}
-
-<div class="configurator-wrapper" 
-  data-unavailable="{% if product.tags contains 'unavailable' %}true{% else %}false{% endif %}"
-  data-base-price="{{ product.price }}">
+<div class="configurator-wrapper">
 
   {%- if product.tags contains 'unavailable' -%}
     <div class="unavailable-msg">
@@ -10,36 +6,27 @@
     </div>
   {%- else -%}
 
-    {%- comment %} Vimeo Video {%- endcomment -%}
     {%- if product.metafields.custom.vimeo_id != blank -%}
       <div class="vimeo-wrapper">
-        <iframe 
-          src="https://player.vimeo.com/video/{{ product.metafields.custom.vimeo_id }}" 
-          width="100%" height="400" frameborder="0" allowfullscreen>
-        </iframe>
+        <iframe src="https://player.vimeo.com/video/{{ product.metafields.custom.vimeo_id }}" width="100%" height="400" frameborder="0" allowfullscreen></iframe>
       </div>
     {%- endif -%}
 
-    {%- comment %} Estimated Ship Date {%- endcomment -%}
     <div class="ship-date">
       <p>
         <strong>Estimated Ship Date:</strong>
-        <span id="ship-date-text">
-          {% if section.settings.quick_ship %}
-            Ships in {{ section.settings.quick_ship_days }} business days
-          {% else %}
-            Ships in {{ section.settings.standard_lead_time }} weeks
-          {% endif %}
-        </span>
+        {% if section.settings.quick_ship %}
+          Ships in {{ section.settings.quick_ship_days }} business days
+        {% else %}
+          Ships in {{ section.settings.standard_lead_time }} weeks
+        {% endif %}
       </p>
     </div>
 
-    {%- comment %} Price Display {%- endcomment -%}
     <div class="price-display">
-      <h2>Total Price: $<span id="total-price">{{ product.price | money_without_currency }}</span></h2>
+      <h2>Total Price: $<span id="total-price">{{ product.price | divided_by: 100.0 | round: 2 }}</span></h2>
     </div>
 
-    {%- comment %} Step Progress {%- endcomment -%}
     <div class="steps-progress">
       <div class="step-indicator active" data-step="1">1. Model</div>
       <div class="step-indicator" data-step="2">2. Ventilation</div>
@@ -48,13 +35,10 @@
       <div class="step-indicator" data-step="5">5. Order Options</div>
     </div>
 
-    {%- comment %} Configurator Form {%- endcomment -%}
     <form id="configurator-form">
 
-      {%- comment %} STEP 1: Model {%- endcomment -%}
       <div class="step-panel active" data-step="1">
         <h3>Step 1: Model</h3>
-
         <div class="field-group">
           <label>Color Options</label>
           <select name="Color Options" id="color-options">
@@ -64,9 +48,8 @@
             <option value="Sherwin-Williams Match">Sherwin-Williams Match (+$200)</option>
           </select>
         </div>
-
         <div class="field-group" id="paint-finish-group" style="display:none">
-          <label>Color (Paint/Finish Selection)</label>
+          <label>Color Finish Selection</label>
           <select name="Color Finish">
             <option value="">Select Finish</option>
             <option value="Matte White">Matte White</option>
@@ -75,20 +58,17 @@
             <option value="Antique Brass">Antique Brass</option>
           </select>
         </div>
-
         <div class="field-group" id="color-match-group" style="display:none">
           <label>Color Match Selection</label>
           <input type="text" name="Color Match Selection" placeholder="Enter your color name">
         </div>
-
         <div class="field-group" id="sw-code-group" style="display:none">
           <label>Sherwin-Williams Color Code</label>
           <input type="text" name="SW Color Code" placeholder="e.g. SW 7015">
         </div>
-
         <div class="field-group">
           <label>Size</label>
-          <select name="Size" id="size-select">
+          <select name="Size">
             <option value="">Select Size</option>
             <option value="30 inch">30 inch</option>
             <option value="36 inch">36 inch</option>
@@ -96,17 +76,13 @@
             <option value="48 inch">48 inch</option>
           </select>
         </div>
-
-        <div class="step-summary" id="summary-1" style="display:none"></div>
-        <button type="button" class="btn-next" data-next="2">Next: Ventilation →</button>
+        <button type="button" class="btn-next" data-next="2">Next: Ventilation</button>
       </div>
 
-      {%- comment %} STEP 2: Ventilation {%- endcomment -%}
       <div class="step-panel" data-step="2" style="display:none">
         <h3>Step 2: Ventilation</h3>
-
         <div class="field-group">
-          <label>Ventilation Options</label>
+          <label>Ventilation Brand</label>
           <select name="Ventilation Options" id="ventilation-brand">
             <option value="">Select Brand</option>
             <option value="Broan">Broan</option>
@@ -117,104 +93,88 @@
             <option value="Non-Ducted">Non-Ducted Kit</option>
           </select>
         </div>
-
         <div class="field-group" id="broan-cfm" style="display:none">
-          <label>Broan CFM Selection</label>
+          <label>Broan CFM</label>
           <select name="Broan CFM">
             <option value="">Select CFM</option>
             <option value="Broan 160 CFM">160 CFM</option>
-            <option value="Broan 220 CFM">220 CFM (+$50)</option>
-            <option value="Broan 300 CFM">300 CFM (+$100)</option>
+            <option value="Broan 220 CFM" data-price="50">220 CFM (+$50)</option>
+            <option value="Broan 300 CFM" data-price="100">300 CFM (+$100)</option>
           </select>
         </div>
-
         <div class="field-group" id="zline-cfm" style="display:none">
-          <label>ZLine CFM Selection</label>
+          <label>ZLine CFM</label>
           <select name="ZLine CFM">
             <option value="">Select CFM</option>
             <option value="ZLine 400 CFM">400 CFM</option>
-            <option value="ZLine 700 CFM">700 CFM (+$80)</option>
+            <option value="ZLine 700 CFM" data-price="80">700 CFM (+$80)</option>
           </select>
         </div>
-
         <div class="field-group" id="ventahood-cfm" style="display:none">
-          <label>Vent-A-Hood CFM Selection</label>
+          <label>Vent-A-Hood CFM</label>
           <select name="Vent-A-Hood CFM">
             <option value="">Select CFM</option>
             <option value="VAH 300 CFM">300 CFM</option>
-            <option value="VAH 600 CFM">600 CFM (+$120)</option>
+            <option value="VAH 600 CFM" data-price="120">600 CFM (+$120)</option>
           </select>
         </div>
-
         <div class="field-group" id="tradewinds-cfm" style="display:none">
-          <label>TradeWinds CFM Selection</label>
+          <label>TradeWinds CFM</label>
           <select name="TradeWinds CFM">
             <option value="">Select CFM</option>
             <option value="TW 350 CFM">350 CFM</option>
-            <option value="TW 600 CFM">600 CFM (+$90)</option>
+            <option value="TW 600 CFM" data-price="90">600 CFM (+$90)</option>
           </select>
         </div>
-
         <div class="field-group" id="hauslane-cfm" style="display:none">
-          <label>Hauslane CFM Selection</label>
+          <label>Hauslane CFM</label>
           <select name="Hauslane CFM">
             <option value="">Select CFM</option>
             <option value="HL 450 CFM">450 CFM</option>
-            <option value="HL 900 CFM">900 CFM (+$110)</option>
+            <option value="HL 900 CFM" data-price="110">900 CFM (+$110)</option>
           </select>
         </div>
-
-        <div class="field-group" id="recirc-vent-group">
+        <div class="field-group">
           <label>Add Recirculating Vent</label>
-          <select name="Recirculating Vent" id="recirc-vent">
+          <select name="Recirculating Vent">
             <option value="No">No</option>
             <option value="Yes" data-price="75">Yes (+$75)</option>
           </select>
         </div>
-
-        <div class="step-summary" id="summary-2" style="display:none"></div>
-        <button type="button" class="btn-prev" data-prev="1">← Back</button>
-        <button type="button" class="btn-next" data-next="3">Next: Molding →</button>
+        <button type="button" class="btn-prev" data-prev="1">Back</button>
+        <button type="button" class="btn-next" data-next="3">Next: Molding</button>
       </div>
 
-      {%- comment %} STEP 3: Molding {%- endcomment -%}
       <div class="step-panel" data-step="3" style="display:none">
         <h3>Step 3: Molding</h3>
-
         <div class="field-group">
           <label>Trim Options</label>
           <select name="Trim Options">
             <option value="No Trim">No Trim</option>
-            <option value="Standard Trim">Standard Trim (+$50)</option>
-            <option value="Premium Trim">Premium Trim (+$100)</option>
+            <option value="Standard Trim" data-price="50">Standard Trim (+$50)</option>
+            <option value="Premium Trim" data-price="100">Premium Trim (+$100)</option>
           </select>
         </div>
-
         <div class="field-group">
-          <label>How Would You Like Your Trim</label>
+          <label>Trim Style</label>
           <select name="Trim Style">
             <option value="Painted">Painted</option>
-            <option value="Stained">Stained (+$30)</option>
+            <option value="Stained" data-price="30">Stained (+$30)</option>
           </select>
         </div>
-
         <div class="field-group">
           <label>Crown Molding</label>
-          <select name="Crown Molding" id="crown-molding">
+          <select name="Crown Molding">
             <option value="No Crown Molding">No Crown Molding</option>
             <option value="Crown Molding Installed" data-price="260">Crown Molding Installed (+$260)</option>
           </select>
         </div>
-
-        <div class="step-summary" id="summary-3" style="display:none"></div>
-        <button type="button" class="btn-prev" data-prev="2">← Back</button>
-        <button type="button" class="btn-next" data-next="4">Next: Size Modification →</button>
+        <button type="button" class="btn-prev" data-prev="2">Back</button>
+        <button type="button" class="btn-next" data-next="4">Next: Size Modification</button>
       </div>
 
-      {%- comment %} STEP 4: Size Modification {%- endcomment -%}
       <div class="step-panel" data-step="4" style="display:none">
         <h3>Step 4: Size Modification</h3>
-
         <div class="field-group">
           <label>Increase Depth</label>
           <select name="Increase Depth">
@@ -222,7 +182,6 @@
             <option value="Yes" data-price="120">Yes (+$120)</option>
           </select>
         </div>
-
         <div class="field-group">
           <label>Reduce Height</label>
           <select name="Reduce Height">
@@ -230,7 +189,6 @@
             <option value="Yes" data-price="165">Yes (+$165)</option>
           </select>
         </div>
-
         <div class="field-group">
           <label>Extend Your Chimney</label>
           <select name="Extend Chimney">
@@ -238,7 +196,6 @@
             <option value="Yes" data-price="95">Yes (+$95)</option>
           </select>
         </div>
-
         <div class="field-group">
           <label>Add Solid Bottom</label>
           <select name="Add Solid Bottom">
@@ -246,16 +203,12 @@
             <option value="Yes" data-price="85">Yes (+$85)</option>
           </select>
         </div>
-
-        <div class="step-summary" id="summary-4" style="display:none"></div>
-        <button type="button" class="btn-prev" data-prev="3">← Back</button>
-        <button type="button" class="btn-next" data-next="5">Next: Order Options →</button>
+        <button type="button" class="btn-prev" data-prev="3">Back</button>
+        <button type="button" class="btn-next" data-next="5">Next: Order Options</button>
       </div>
 
-      {%- comment %} STEP 5: Order Options {%- endcomment -%}
       <div class="step-panel" data-step="5" style="display:none">
         <h3>Step 5: Order Options</h3>
-
         <div class="field-group">
           <label>Rush Manufacturing</label>
           <select name="Rush Manufacturing">
@@ -263,16 +216,13 @@
             <option value="Yes" data-price="299">Yes - Rush (+$299)</option>
           </select>
         </div>
-
-        <div class="step-summary" id="summary-5" style="display:none"></div>
-        <button type="button" class="btn-prev" data-prev="4">← Back</button>
-
         <div class="final-summary">
           <h3>Your Configuration Summary</h3>
           <div id="full-summary"></div>
           <h3>Total Price: $<span id="final-price">0</span></h3>
-          <button type="button" id="add-to-cart-btn" class="btn-add-cart">Add to Cart</button>
         </div>
+        <button type="button" class="btn-prev" data-prev="4">Back</button>
+        <button type="button" id="add-to-cart-btn" class="btn-add-cart">Add to Cart</button>
       </div>
 
     </form>
@@ -281,253 +231,131 @@
 </div>
 
 <style>
-.configurator-wrapper {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: sans-serif;
-}
-.unavailable-msg {
-  background: #f8d7da;
-  color: #721c24;
-  padding: 20px;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 1.2em;
-  font-weight: bold;
-}
-.steps-progress {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-}
-.step-indicator {
-  padding: 8px 12px;
-  background: #e0e0e0;
-  border-radius: 20px;
-  font-size: 13px;
-  cursor: pointer;
-}
-.step-indicator.active {
-  background: #000;
-  color: #fff;
-}
-.step-indicator.completed {
-  background: #28a745;
-  color: #fff;
-}
-.step-panel {
-  background: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 24px;
-  margin-bottom: 20px;
-}
-.field-group {
-  margin-bottom: 16px;
-}
-.field-group label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 6px;
-}
-.field-group select,
-.field-group input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 15px;
-}
-.price-display {
-  background: #000;
-  color: #fff;
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  text-align: center;
-}
-.price-display h2 {
-  margin: 0;
-}
-.btn-next, .btn-prev, .btn-add-cart {
-  padding: 12px 24px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 15px;
-  margin-right: 10px;
-  margin-top: 10px;
-}
-.btn-next {
-  background: #000;
-  color: #fff;
-}
-.btn-prev {
-  background: #e0e0e0;
-  color: #000;
-}
-.btn-add-cart {
-  background: #28a745;
-  color: #fff;
-  width: 100%;
-  font-size: 18px;
-  padding: 16px;
-}
-.final-summary {
-  margin-top: 20px;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-}
-#full-summary p {
-  margin: 6px 0;
-  border-bottom: 1px solid #f0f0f0;
-  padding-bottom: 6px;
-}
-.ship-date {
-  background: #e8f5e9;
-  padding: 12px;
-  border-radius: 6px;
-  margin-bottom: 16px;
-}
-.vimeo-wrapper {
-  margin-bottom: 20px;
-}
+.configurator-wrapper { max-width: 800px; margin: 0 auto; padding: 20px; font-family: sans-serif; }
+.unavailable-msg { background: #f8d7da; color: #721c24; padding: 20px; border-radius: 8px; text-align: center; font-size: 1.2em; font-weight: bold; }
+.steps-progress { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+.step-indicator { padding: 8px 12px; background: #e0e0e0; border-radius: 20px; font-size: 13px; }
+.step-indicator.active { background: #000; color: #fff; }
+.step-indicator.completed { background: #28a745; color: #fff; }
+.step-panel { background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 24px; margin-bottom: 20px; }
+.field-group { margin-bottom: 16px; }
+.field-group label { display: block; font-weight: bold; margin-bottom: 6px; }
+.field-group select, .field-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 15px; }
+.price-display { background: #000; color: #fff; padding: 16px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
+.price-display h2 { margin: 0; }
+.btn-next, .btn-prev, .btn-add-cart { padding: 12px 24px; border: none; border-radius: 4px; cursor: pointer; font-size: 15px; margin-right: 10px; margin-top: 10px; }
+.btn-next { background: #000; color: #fff; }
+.btn-prev { background: #e0e0e0; color: #000; }
+.btn-add-cart { background: #28a745; color: #fff; width: 100%; font-size: 18px; padding: 16px; margin-top: 16px; }
+.final-summary { margin-top: 20px; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 20px; }
+#full-summary p { margin: 6px 0; border-bottom: 1px solid #f0f0f0; padding-bottom: 6px; }
+.ship-date { background: #e8f5e9; padding: 12px; border-radius: 6px; margin-bottom: 16px; }
+.vimeo-wrapper { margin-bottom: 20px; }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-  const wrapper = document.querySelector('.configurator-wrapper');
-  const basePrice = parseInt(wrapper.dataset.basePrice) / 100;
-  let priceAdders = {};
+  var basePrice = {{ product.price | divided_by: 100.0 }};
+  var priceAdders = {};
 
-  // ── Conditional Fields ──
-  const colorOptions = document.getElementById('color-options');
+  function updatePrice() {
+    var total = basePrice;
+    Object.keys(priceAdders).forEach(function(key) { total += priceAdders[key]; });
+    var tp = document.getElementById('total-price');
+    var fp = document.getElementById('final-price');
+    if (tp) tp.textContent = total.toFixed(2);
+    if (fp) fp.textContent = total.toFixed(2);
+  }
+
+  var colorOptions = document.getElementById('color-options');
   if (colorOptions) {
     colorOptions.addEventListener('change', function() {
-      const val = this.value;
-      document.getElementById('paint-finish-group').style.display = 
-        (val === 'Paint Match') ? 'block' : 'none';
-      document.getElementById('color-match-group').style.display = 
-        (val === 'Paint Match') ? 'block' : 'none';
-      document.getElementById('sw-code-group').style.display = 
-        (val === 'Sherwin-Williams Match') ? 'block' : 'none';
-
+      var val = this.value;
+      var pg = document.getElementById('paint-finish-group');
+      var cm = document.getElementById('color-match-group');
+      var sw = document.getElementById('sw-code-group');
+      if (pg) pg.style.display = val === 'Paint Match' ? 'block' : 'none';
+      if (cm) cm.style.display = val === 'Paint Match' ? 'block' : 'none';
+      if (sw) sw.style.display = val === 'Sherwin-Williams Match' ? 'block' : 'none';
       priceAdders['color'] = val === 'Paint Match' ? 150 : val === 'Sherwin-Williams Match' ? 200 : 0;
       updatePrice();
     });
   }
 
-  // Ventilation Brand conditional
-  const ventBrand = document.getElementById('ventilation-brand');
+  var ventBrand = document.getElementById('ventilation-brand');
   if (ventBrand) {
     ventBrand.addEventListener('change', function() {
-      const brand = this.value;
-      document.getElementById('broan-cfm').style.display = brand === 'Broan' ? 'block' : 'none';
-      document.getElementById('zline-cfm').style.display = brand === 'ZLine' ? 'block' : 'none';
-      document.getElementById('ventahood-cfm').style.display = brand === 'Vent-A-Hood' ? 'block' : 'none';
-      document.getElementById('tradewinds-cfm').style.display = brand === 'TradeWinds' ? 'block' : 'none';
-      document.getElementById('hauslane-cfm').style.display = brand === 'Hauslane' ? 'block' : 'none';
+      var brand = this.value;
+      var ids = ['broan-cfm','zline-cfm','ventahood-cfm','tradewinds-cfm','hauslane-cfm'];
+      var brands = ['Broan','ZLine','Vent-A-Hood','TradeWinds','Hauslane'];
+      ids.forEach(function(id, i) {
+        var el = document.getElementById(id);
+        if (el) el.style.display = brand === brands[i] ? 'block' : 'none';
+      });
     });
   }
 
-  // ── Price Adder Fields ──
-  document.querySelectorAll('select').forEach(function(sel) {
+  document.querySelectorAll('#configurator-form select').forEach(function(sel) {
     sel.addEventListener('change', function() {
-      const selected = this.options[this.selectedIndex];
-      const price = parseInt(selected.dataset.price || 0);
+      var selected = this.options[this.selectedIndex];
+      var price = parseInt(selected.getAttribute('data-price') || 0);
       priceAdders[this.name] = price;
       updatePrice();
     });
   });
 
-  function updatePrice() {
-    let total = basePrice;
-    Object.values(priceAdders).forEach(function(p) { total += p; });
-    document.getElementById('total-price').textContent = total.toFixed(2);
-    const finalPrice = document.getElementById('final-price');
-    if (finalPrice) finalPrice.textContent = total.toFixed(2);
-  }
-
-  // ── Step Navigation ──
-  document.querySelectorAll('.btn-next').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      const nextStep = parseInt(this.dataset.next);
-      goToStep(nextStep);
-    });
-  });
-
-  document.querySelectorAll('.btn-prev').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      const prevStep = parseInt(this.dataset.prev);
-      goToStep(prevStep);
-    });
-  });
-
   function goToStep(step) {
-    document.querySelectorAll('.step-panel').forEach(function(panel) {
-      panel.style.display = 'none';
-    });
-    const target = document.querySelector('.step-panel[data-step="' + step + '"]');
+    document.querySelectorAll('.step-panel').forEach(function(panel) { panel.style.display = 'none'; });
+    var target = document.querySelector('.step-panel[data-step="' + step + '"]');
     if (target) target.style.display = 'block';
-
     document.querySelectorAll('.step-indicator').forEach(function(ind) {
-      const s = parseInt(ind.dataset.step);
+      var s = parseInt(ind.getAttribute('data-step'));
       ind.classList.remove('active', 'completed');
       if (s === step) ind.classList.add('active');
       if (s < step) ind.classList.add('completed');
     });
-
     if (step === 5) updateFullSummary();
   }
 
+  document.querySelectorAll('.btn-next').forEach(function(btn) {
+    btn.addEventListener('click', function() { goToStep(parseInt(this.getAttribute('data-next'))); });
+  });
+
+  document.querySelectorAll('.btn-prev').forEach(function(btn) {
+    btn.addEventListener('click', function() { goToStep(parseInt(this.getAttribute('data-prev'))); });
+  });
+
   function updateFullSummary() {
-    const summary = document.getElementById('full-summary');
+    var summary = document.getElementById('full-summary');
     if (!summary) return;
-    let html = '';
+    var html = '';
     document.querySelectorAll('#configurator-form select, #configurator-form input').forEach(function(field) {
       if (field.name && field.value && field.offsetParent !== null) {
         html += '<p><strong>' + field.name + ':</strong> ' + field.value + '</p>';
       }
     });
     summary.innerHTML = html;
-
-    let total = basePrice;
-    Object.values(priceAdders).forEach(function(p) { total += p; });
-    document.getElementById('final-price').textContent = total.toFixed(2);
+    updatePrice();
   }
 
-  // ── Add to Cart ──
-  const addToCartBtn = document.getElementById('add-to-cart-btn');
-  if (addToCartBtn) {
-    addToCartBtn.addEventListener('click', function() {
-      const properties = {};
+  var addBtn = document.getElementById('add-to-cart-btn');
+  if (addBtn) {
+    addBtn.addEventListener('click', function() {
+      var properties = {};
       document.querySelectorAll('#configurator-form select, #configurator-form input').forEach(function(field) {
         if (field.name && field.value && field.offsetParent !== null) {
           properties[field.name] = field.value;
         }
       });
-
-      const variantId = {{ product.first_available_variant.id | json }};
-
+      var variantId = {{ product.variants.first.id }};
       fetch('/cart/add.js', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: variantId,
-          quantity: 1,
-          properties: properties
-        })
+        body: JSON.stringify({ id: variantId, quantity: 1, properties: properties })
       })
       .then(function(res) { return res.json(); })
-      .then(function(data) {
-        alert('Product added to cart!');
-        openCartDrawer();
-      })
+      .then(function() { window.location.href = '/cart'; })
       .catch(function(err) {
         console.error('Error:', err);
         alert('Error adding to cart. Please try again.');

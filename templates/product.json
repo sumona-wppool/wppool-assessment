@@ -3,9 +3,18 @@
     "main": {
       "type": "product",
       "settings": {}
+    },
+    "product-configurator": {
+      "type": "product-configurator",
+      "settings": {
+        "quick_ship": false,
+        "quick_ship_days": 10,
+        "standard_lead_time": "4-6"
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "product-configurator"
   ]
 }
