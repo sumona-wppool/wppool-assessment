@@ -1,0 +1,119 @@
+{% if product.metafields.custom.expivi_product_id != blank %}
+
+<div class="expivi-viewer-wrapper">
+  <h3>3D Product Viewer</h3>
+  <div id="expivi-container">
+    <iframe
+      src="https://app.expivi.net/embed/{{ product.metafields.custom.expivi_product_id }}"
+      width="100%"
+      height="500px"
+      frameborder="0"
+      allowfullscreen
+      id="expivi-iframe">
+    </iframe>
+  </div>
+</div>
+
+{% else %}
+
+{% comment %}
+  Placeholder when no Expivi product ID is configured.
+  In production, set the metafield custom.expivi_product_id
+  on the product to show the 3D viewer.
+{% endcomment %}
+
+{% if section.settings.show_placeholder %}
+<div class="expivi-placeholder">
+  <div class="expivi-placeholder-inner">
+    <p>🎯 3D Product Viewer</p>
+    <p>Configure Expivi Product ID in product metafields to enable 3D visualization</p>
+  </div>
+</div>
+{% endif %}
+
+{% endif %}
+
+<style>
+.expivi-viewer-wrapper {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+}
+.expivi-viewer-wrapper h3 {
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 20px;
+}
+#expivi-container {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+}
+#expivi-iframe {
+  display: block;
+  width: 100%;
+  min-height: 500px;
+}
+.expivi-placeholder {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+}
+.expivi-placeholder-inner {
+  background: #f5f5f5;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  padding: 40px;
+  text-align: center;
+  color: #666;
+}
+.expivi-placeholder-inner p {
+  margin: 10px 0;
+  font-size: 16px;
+}
+</style>
+
+<script>
+  {% if product.metafields.custom.expivi_product_id != blank %}
+  
+  // Real Expivi Integration Notes:
+  // 1. Load Expivi SDK: <script src="https://cdn.expivi.net/sdk/latest/expivi.js"><\/script>
+  // 2. Initialize with product ID from metafield
+  // 3. Handle configuration changes from Shopify configurator
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    var iframe = document.getElementById('expivi-iframe');
+    if (iframe) {
+      // Listen for configuration changes and sync with Expivi
+      window.addEventListener('message', function(event) {
+        if (event.data && event.data.type === 'configurator-update') {
+          iframe.contentWindow.postMessage({
+            type: 'update-configuration',
+            data: event.data.configuration
+          }, '*');
+        }
+      });
+    }
+  });
+  
+  {% endif %}
+</script>
+
+{% schema %}
+{
+  "name": "Expivi 3D Viewer",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_placeholder",
+      "label": "Show Placeholder (when no Expivi ID)",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Expivi 3D Viewer"
+    }
+  ]
+}
+{% endschema %}

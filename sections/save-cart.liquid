@@ -1,0 +1,106 @@
+{% if customer %}
+<div class="save-cart-wrapper">
+  <button id="save-cart-btn" class="btn-save-cart">💾 Save Cart</button>
+  <div id="cart-link-box" style="display:none">
+    <p><strong>Share your cart:</strong></p>
+    <input type="text" id="cart-link-input" readonly>
+    <button id="copy-link-btn">Copy Link</button>
+    <p id="copy-success" style="display:none; color:green">✅ Link Copied!</p>
+  </div>
+</div>
+
+<style>
+.save-cart-wrapper {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  text-align: center;
+}
+.btn-save-cart {
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.btn-save-cart:hover { background: #333; }
+#cart-link-box {
+  margin-top: 15px;
+}
+#cart-link-input {
+  width: 70%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-right: 10px;
+}
+#copy-link-btn {
+  background: #28a745;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var saveBtn = document.getElementById('save-cart-btn');
+  var cartLinkBox = document.getElementById('cart-link-box');
+  var cartLinkInput = document.getElementById('cart-link-input');
+  var copyBtn = document.getElementById('copy-link-btn');
+  var copySuccess = document.getElementById('copy-success');
+
+  if (saveBtn) {
+    saveBtn.addEventListener('click', function() {
+      fetch('/cart.js')
+        .then(function(res) { return res.json(); })
+        .then(function(cart) {
+          var items = cart.items.map(function(item) {
+            return item.variant_id + ':' + item.quantity;
+          }).join(',');
+
+          var cartUrl = window.location.origin + '/cart/' + items;
+          cartLinkInput.value = cartUrl;
+          cartLinkBox.style.display = 'block';
+        });
+    });
+  }
+
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function() {
+      cartLinkInput.select();
+      document.execCommand('copy');
+      copySuccess.style.display = 'block';
+      setTimeout(function() {
+        copySuccess.style.display = 'none';
+      }, 3000);
+    });
+  }
+});
+</script>
+
+{% else %}
+<div class="save-cart-login">
+  <p>Please <a href="/account/login">login</a> to save your cart.</p>
+</div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Save Cart",
+  "presets": [
+    {
+      "name": "Save Cart"
+    }
+  ]
+}
+{% endschema %}
