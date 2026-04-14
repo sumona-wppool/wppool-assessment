@@ -1,31 +1,53 @@
 {% comment %}
-  This section is used in the collection template to render collection page
-  listing all products within a collection.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
+  Collection page with customer-tag-aware product filtering.
+  - Customers tagged 'wholesale' see ALL products (including wholesale-only)
+  - Regular customers / guests see only products NOT tagged 'wholesale-only'
 {% endcomment %}
 
 <h1>{{ collection.title }}</h1>
 
+{% comment %} Check if logged-in customer has 'wholesale' tag {% endcomment %}
+{% assign is_wholesale = false %}
+{% if customer %}
+  {% for tag in customer.tags %}
+    {% if tag == 'wholesale' %}
+      {% assign is_wholesale = true %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
 <div class="collection-products">
   {% paginate collection.products by 20 %}
     {% for product in collection.products %}
-      <div class="collection-product">
-        {% if product.featured_image %}
-          {% render 'image',
-            class: 'collection-product__image',
-            image: product.featured_image,
-            url: product.url,
-            width: 400,
-            height: 400,
-            crop: 'center'
-          %}
+
+      {% comment %} Check if this product is wholesale-only {% endcomment %}
+      {% assign is_wholesale_product = false %}
+      {% for tag in product.tags %}
+        {% if tag == 'wholesale-only' %}
+          {% assign is_wholesale_product = true %}
         {% endif %}
-        <div class="collection-product__content">
-          <p>{{ product.title | escape | link_to: product.url }}</p>
-          <p>{{ product.price | money }}</p>
+      {% endfor %}
+
+      {% comment %} Show product only if: not wholesale-only OR customer is wholesale {% endcomment %}
+      {% if is_wholesale_product == false or is_wholesale == true %}
+        <div class="collection-product">
+          {% if product.featured_image %}
+            {% render 'image',
+              class: 'collection-product__image',
+              image: product.featured_image,
+              url: product.url,
+              width: 400,
+              height: 400,
+              crop: 'center'
+            %}
+          {% endif %}
+          <div class="collection-product__content">
+            <p>{{ product.title | escape | link_to: product.url }}</p>
+            <p>{{ product.price | money }}</p>
+          </div>
         </div>
-      </div>
+      {% endif %}
+
     {% endfor %}
 
     {{ paginate | default_pagination }}
