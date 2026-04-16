@@ -6,12 +6,18 @@
   </div>
 {%- else -%}
 
-  {%- if product.metafields.custom.vimeo_id != blank -%}
-    
-    <div class="vimeo-wrapper">
-      <iframe src="https://player.vimeo.com/video/{{ product.metafields.custom.vimeo_id }}" width="100%" height="400" frameborder="0" allowfullscreen></iframe>
-    </div>
-  {%- endif -%}
+{%- assign vimeo_id = product.metafields.custom.vimeo_id.value -%}
+{%- if vimeo_id != blank -%}
+  <div class="vimeo-wrapper">
+    <iframe 
+      src="https://player.vimeo.com/video/{{ vimeo_id }}" 
+      width="100%" 
+      height="400" 
+      frameborder="0" 
+      allowfullscreen>
+    </iframe>
+  </div>
+{%- endif -%}
 
   <div class="ship-date">
     <p>

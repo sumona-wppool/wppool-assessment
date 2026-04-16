@@ -111,11 +111,11 @@ class ProductConfigurator extends HTMLElement {
     addBtn.addEventListener('click', () => {
       const properties = {};
       this.querySelectorAll('select, input').forEach(field => {
-        if (field.name && field.value && field.offsetParent !== null) {
+        if (field.name && field.value) {
           properties[field.name] = field.value;
         }
       });
-      const variantId = this.dataset.variantId;
+      const variantId = parseInt(this.dataset.variantId);
       fetch('/cart/add.js', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
