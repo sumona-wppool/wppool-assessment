@@ -17,19 +17,30 @@
 {% endif %}
 
 <div class="collection-products">
+  {% comment %} 
+    Step 1: Determine if the logged-in customer is a wholesale customer 
+  {% endcomment %}
+  {% assign is_wholesale_customer = false %}
+  {% if customer %}
+    {% if customer.tags contains 'wholesale' %}
+      {% assign is_wholesale_customer = true %}
+    {% endif %}
+  {% endif %}
+
   {% paginate collection.products by 20 %}
     {% for product in collection.products %}
 
-      {% comment %} Check if this product is wholesale-only {% endcomment %}
-      {% assign is_wholesale_product = false %}
-      {% for tag in product.tags %}
-        {% if tag == 'wholesale-only' %}
-          {% assign is_wholesale_product = true %}
-        {% endif %}
-      {% endfor %}
+      {% comment %} Step 2: Check if this product is restricted to wholesale-only {% endcomment %}
+      {% assign is_wholesale_only_product = false %}
+      {% if product.tags contains 'wholesale-only' %}
+        {% assign is_wholesale_only_product = true %}
+      {% endif %}
 
-      {% comment %} Show product only if: not wholesale-only OR customer is wholesale {% endcomment %}
-      {% if is_wholesale_product == false or is_wholesale == true %}
+      {% comment %} 
+        Step 3: Visibility Logic
+        Show if: (Product is NOT wholesale) OR (Product IS wholesale AND Customer IS wholesale)
+      {% endcomment %}
+      {% if is_wholesale_only_product == false or is_wholesale_customer == true %}
         <div class="collection-product">
           {% if product.featured_image %}
             {% render 'image',
@@ -41,7 +52,11 @@
               crop: 'center'
             %}
           {% endif %}
+          
           <div class="collection-product__content">
+            {% comment %} 
+              Using escape and link_to properly as per your original structure 
+            {% endcomment %}
             <p>{{ product.title | escape | link_to: product.url }}</p>
             <p>{{ product.price | money }}</p>
           </div>
@@ -50,20 +65,43 @@
 
     {% endfor %}
 
-    {{ paginate | default_pagination }}
+    <div class="pagination">
+      {{ paginate | default_pagination }}
+    </div>
   {% endpaginate %}
 </div>
 
 {% stylesheet %}
   .collection-products {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Grid size adjusted for better UI */
+    gap: 20px;
+    padding: 20px;
+  }
+  .collection-product {
+    border: 1px solid #eee;
+    padding: 10px;
+    text-align: center;
+  }
+  .collection-product__image {
+    max-width: 100%;
+    height: auto;
+  }
+  .pagination {
+    grid-column: 1 / -1;
+    text-align: center;
+    margin-top: 30px;
   }
 {% endstylesheet %}
 
 {% schema %}
 {
-  "name": "t:general.collection",
-  "settings": []
+  "name": "Collection Grid",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Default Collection"
+    }
+  ]
 }
 {% endschema %}
