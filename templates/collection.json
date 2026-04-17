@@ -1,5 +1,9 @@
 {
   "sections": {
+    "main": {
+      "type": "main-collection-product-grid",
+      "settings": {}
+    },
     "customer-collection": {
       "type": "customer-collection",
       "settings": {}
